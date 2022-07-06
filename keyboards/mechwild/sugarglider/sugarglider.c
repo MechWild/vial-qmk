@@ -273,6 +273,7 @@ bool led_update_kb(led_t led_state) {
 //#endif
 
 #ifdef OLED_ENABLE
+#ifndef OLED_DISPLAY_128X64
 	oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 		return OLED_ROTATION_270;       // flips the display 270 degrees
 	}
@@ -292,7 +293,10 @@ bool led_update_kb(led_t led_state) {
 		oled_write_P(logo_4, false);
 	}
 
-	bool oled_task_user(void) {
+	bool oled_task_kb(void) {
+        if(!oled_task_user()) {
+            return false;
+        }
 		render_logo();
 		oled_set_cursor(0,6);
 
@@ -338,10 +342,76 @@ bool led_update_kb(led_t led_state) {
     }
 #endif
 
-    return false;
+    return true;
 	}
-#endif
+#else
+    oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+		return OLED_ROTATION_180;       // flips the display 270 degrees
+	}
+	static void render_logo(void) {     // Render MechWild "MW" Logo
+		static const char PROGMEM logo_1[] = {0x8A, 0x8B, 0x8C, 0x8D, 0x00};
+		static const char PROGMEM logo_2[] = {0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0x00};
+		static const char PROGMEM logo_3[] = {0xCA, 0xCB, 0xCC, 0xCD, 0x00};
+		static const char PROGMEM logo_4[] = {0x20, 0x8E, 0x8F, 0x90, 0x00};
+		oled_set_cursor(0,0);
+		oled_write_P(logo_1, false);
+		oled_set_cursor(0,1);
+		oled_write_P(logo_2, false);
+		oled_set_cursor(0,2);
+		oled_write_P(logo_3, false);
+		oled_set_cursor(0,3);
+		oled_write_P(logo_4, false);
+	}
 
+	bool oled_task_kb(void) {
+        if(!oled_task_user()) {
+            return false;
+        }
+        render_logo();
+        oled_set_cursor(8,1);
+        switch (get_highest_layer(layer_state)) {
+            case 0:
+                oled_write_P(PSTR("Layer 0"), false);
+                break;
+            case 1:
+                oled_write_P(PSTR("Layer 1"), false);
+                break;
+            case 2:
+                oled_write_P(PSTR("Layer 2"), false);
+                break;
+            case 3:
+                oled_write_P(PSTR("Layer 3"), false);
+                break;
+            default:
+                oled_write_P(PSTR("Layer ?"), false);    // Should never display, here as a catchall
+        }
+        led_t led_state = host_keyboard_led_state();
+        oled_set_cursor(8,0);
+        oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
+        oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
+        oled_write_P(led_state.scroll_lock ? PSTR("SCR") : PSTR("    "), false);
+#ifdef POINTING_DEVICE_ENABLE
+        oled_set_cursor(8,2);
+        oled_write_P(PSTR("DPI:"), false);
+        oled_write(get_u16_str(dpi_array[keyboard_config.dpi_config], ' '), false);
+#endif
+#ifdef DYNAMIC_TAPPING_TERM_ENABLE              // only display tap info if it is being configured dynamically
+        oled_set_cursor(8,3);
+        oled_write_P(PSTR("TAP:"), false);
+        if (keyboard_config.dt_term_config < 0) {
+            oled_write_P(PSTR("Off  "), false);
+        } else {
+#ifdef QMK_SETTINGS
+            oled_write(get_u16_str(QS.tapping_term, ' '), false);
+#else
+            oled_write(get_u16_str(g_tapping_term, ' '), false);
+#endif
+        }
+#endif
+    return true;
+}
+#endif
+#endif
 bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
     switch(keycode) {
 #ifdef POINTING_DEVICE_ENABLE

@@ -44,6 +44,7 @@
 
 /* Define custom font */
 #define OLED_FONT_H "keyboards/mechwild/sugarglider/glcdfont.c"
+#define OLED_DISPLAY_128X64
 
 /* allows the "key" button on the blackpill to toggle caps lock for user testing before soldering */
 #define DIP_SWITCH_PINS { A0 }
@@ -56,7 +57,6 @@
  */
 #define TAPPING_TERM 0
 #define CIRQUE_PINNACLE_ATTENUATION ADC_ATTENUATE_2X
-
 
 /* spi config */
 #define SPI_DRIVER SPID1
@@ -81,9 +81,9 @@
 #define DIODE_DIRECTION COL2ROW
 
 /* RGB settings, uncomment this define to enable RGB */
-//#define RGB_DI_PIN B5
+#define RGB_DI_PIN B5
 #ifdef RGB_DI_PIN
-#    define RGBLED_NUM 6
+#    define RGBLED_NUM 10
 #    define RGBLIGHT_HUE_STEP 8
 #    define RGBLIGHT_SAT_STEP 8
 #    define RGBLIGHT_VAL_STEP 8
