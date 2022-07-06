@@ -72,7 +72,6 @@ The Analog Joystick is an analog (ADC) driven sensor.  There are a variety of jo
 |`ANALOG_JOYSTICK_SPEED_MAX`       | (Optional) The maximum value used for motion.                              | `2`           |
 |`ANALOG_JOYSTICK_CLICK_PIN`       | (Optional) The pin wired up to the press switch of the analog stick.       | _not defined_ |
 
-
 ### Cirque Trackpad
 
 To use the Cirque Trackpad sensor, add this to your `rules.mk`:
@@ -96,21 +95,30 @@ This supports the Cirque Pinnacle 1CA027 Touch Controller, which is used in the 
 |`CIRQUE_PINNACLE_X_UPPER`        | (Optional) The maximum reachable X value on the sensor.                         | `1919`                |
 |`CIRQUE_PINNACLE_Y_LOWER`        | (Optional) The minimum reachable Y value on the sensor.                         | `63`                  |
 |`CIRQUE_PINNACLE_Y_UPPER`        | (Optional) The maximum reachable Y value on the sensor.                         | `1471`                |
+|`CIRQUE_PINNACLE_ATTENUATION`    | (Optional) Sets the attenuation of the sensor data.                             | `ADC_ATTENUATE_4X`    |
 |`CIRQUE_PINNACLE_TAPPING_TERM`   | (Optional) Length of time that a touch can be to be considered a tap.           | `TAPPING_TERM`/`200`  |
 |`CIRQUE_PINNACLE_TOUCH_DEBOUNCE` | (Optional) Length of time that a touch can be to be considered a tap.           | `TAPPING_TERM`/`200`  |
+
+**`CIRQUE_PINNACLE_ATTENUATION`** is a measure of how much data is suppressed in regards to sensitivity. The higher the attenuation, the less sensitive the touchpad will be. 
+
+Default attenuation is set to 4X, although if you are using a thicker overlay (such as the curved overlay) you will want a lower attenuation such as 2X. The possible values are:
+* `ADC_ATTENUATE_4X`: Least sensitive
+* `ADC_ATTENUATE_3X`
+* `ADC_ATTENUATE_2X`
+* `ADC_ATTENUATE_1X`: Most sensitive
 
 | I2C Setting              | Description                                                                     | Default |
 |--------------------------|---------------------------------------------------------------------------------|---------|
 |`CIRQUE_PINNACLE_ADDR`    | (Required) Sets the I2C Address for the Cirque Trackpad                         | `0x2A`  |
 |`CIRQUE_PINNACLE_TIMEOUT` | (Optional) The timeout for i2c communication with the trackpad in milliseconds. | `20`    |
 
-| SPI Setting                   | Description                                                            | Default       |
-|-------------------------------|------------------------------------------------------------------------|---------------|
-|`CIRQUE_PINNACLE_CLOCK_SPEED`  | (Optional) Sets the clock speed that the sensor runs at.               | `1000000`     |
-|`CIRQUE_PINNACLE_SPI_LSBFIRST` | (Optional) Sets the Least/Most Significant Byte First setting for SPI. | `false`       |
-|`CIRQUE_PINNACLE_SPI_MODE`     | (Optional) Sets the SPI Mode for the sensor.                           | `1`           |
-|`CIRQUE_PINNACLE_SPI_DIVISOR`  | (Optional) Sets the SPI Divisor used for SPI communication.            | _varies_      |
-|`CIRQUE_PINNACLE_SPI_CS_PIN`   | (Required) Sets the Cable Select pin connected to the sensor.          | _not defined_ |
+| SPI Setting                   | Description                                                            | Default        |
+|-------------------------------|------------------------------------------------------------------------|----------------|
+|`CIRQUE_PINNACLE_CLOCK_SPEED`  | (Optional) Sets the clock speed that the sensor runs at.               | `1000000`      |
+|`CIRQUE_PINNACLE_SPI_LSBFIRST` | (Optional) Sets the Least/Most Significant Byte First setting for SPI. | `false`        |
+|`CIRQUE_PINNACLE_SPI_MODE`     | (Optional) Sets the SPI Mode for the sensor.                           | `1`            |
+|`CIRQUE_PINNACLE_SPI_DIVISOR`  | (Optional) Sets the SPI Divisor used for SPI communication.            | _varies_       |
+|`CIRQUE_PINNACLE_SPI_CS_PIN`   | (Required) Sets the Cable Select pin connected to the sensor.          | _not defined_  |
 
 Default Scaling/CPI is 1024.
 
@@ -245,7 +253,7 @@ The following configuration options are only available when using `SPLIT_POINTIN
 | `pointing_device_get_report(void)`                         | Returns the current mouse report (as a `mouse_report_t` data structure).                                      | 
 | `pointing_device_set_report(mouse_report)`                 | Sets the mouse report to the assigned `mouse_report_t` data structured passed to the function.                | 
 | `pointing_device_send(void)`                               | Sends the current mouse report to the host system.  Function can be replaced.                                 | 
-| `has_mouse_report_changed(old, new)`                       | Compares the old and new `mouse_report_t` data and returns true only if it has changed.                       |
+| `has_mouse_report_changed(new_report, old_report)`         | Compares the old and new `mouse_report_t` data and returns true only if it has changed.                       |
 | `pointing_device_adjust_by_defines(mouse_report)`          | Applies rotations and invert configurations to a raw mouse report.                                             |
 
 
@@ -271,19 +279,19 @@ The report_mouse_t (here "mouseReport") has the following properties:
 * `mouseReport.y` - this is a signed int from -127 to 127 (not 128, this is defined in USB HID spec) representing movement (+ upward, - downward) on the y axis.
 * `mouseReport.v` - this is a signed int from -127 to 127 (not 128, this is defined in USB HID spec) representing vertical scrolling (+ upward, - downward).
 * `mouseReport.h` - this is a signed int from -127 to 127 (not 128, this is defined in USB HID spec) representing horizontal scrolling (+ right, - left).
-* `mouseReport.buttons` - this is a uint8_t in which the last 5 bits are used.  These bits represent the mouse button state - bit 3 is mouse button 5, and bit 7 is mouse button 1.
+* `mouseReport.buttons` - this is a uint8_t in which all 8 bits are used.  These bits represent the mouse button state - bit 0 is mouse button 1, and bit 7 is mouse button 8.
 
 To manually manipulate the mouse reports outside of the `pointing_device_task_*` functions, you can use:
 
 * `pointing_device_get_report()` - Returns the current report_mouse_t that represents the information sent to the host computer
-* `pointing_device_set_report(report_mouse_t newMouseReport)` - Overrides and saves the report_mouse_t to be sent to the host computer
+* `pointing_device_set_report(report_mouse_t mouse_report)` - Overrides and saves the report_mouse_t to be sent to the host computer
 * `pointing_device_send()` - Sends the mouse report to the host and zeroes out the report. 
 
 When the mouse report is sent, the x, y, v, and h values are set to 0 (this is done in `pointing_device_send()`, which can be overridden to avoid this behavior).  This way, button states persist, but movement will only occur once.  For further customization, both `pointing_device_init` and `pointing_device_task` can be overridden.
 
 Additionally, by default, `pointing_device_send()` will only send a report when the report has actually changed.  This prevents it from continuously sending mouse reports, which will keep the host system awake.  This behavior can be changed by creating your own `pointing_device_send()` function.
 
-Also, you use the `has_mouse_report_changed(new, old)` function to check to see if the report has changed.
+Also, you use the `has_mouse_report_changed(new_report, old_report)` function to check to see if the report has changed.
 
 ## Examples
 
@@ -325,7 +333,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if (set_scrolling) {
         mouse_report.h = mouse_report.x;
         mouse_report.v = mouse_report.y;
-        mouse_report.x = mouse_report.y = 0
+        mouse_report.x = 0;
+        mouse_report.y = 0;
     }
     return mouse_report;
 }

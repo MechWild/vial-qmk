@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "debug.h"
 
 #include "pointing_device.h"
 #include <string.h>
@@ -167,6 +168,7 @@ __attribute__((weak)) void pointing_device_send(void) {
     // If you need to do other things, like debugging, this is the place to do it.
     if (has_mouse_report_changed(local_mouse_report, old_report)) {
         host_mouse_send(&local_mouse_report);
+        //dprintf("checking mouse report");
     }
     // send it and 0 it out except for buttons, so those stay until they are explicity over-ridden using update_pointing_device
     local_mouse_report.x = 0;

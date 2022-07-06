@@ -19,7 +19,6 @@
 #    include <stdbool.h>
 #    include <stdio.h>
 #    include "process_auto_shift.h"
-#    include "qmk_settings.h"
 
 #    ifndef AUTO_SHIFT_DISABLED_AT_STARTUP
 #        define AUTO_SHIFT_STARTUP_STATE true /* enabled */
@@ -151,7 +150,7 @@ static bool autoshift_press(uint16_t keycode, uint16_t now, keyrecord_t *record)
         // clang-format on
         // Prevents keyrepeating unshifted value of key after using it in a key combo.
         autoshift_lastkey = KC_NO;
-if (!QS_auto_shift_modifiers) {
+#    ifndef AUTO_SHIFT_MODIFIERS
         // We can't return true here anymore because custom unshifted values are
         // possible and there's no good way to tell whether the press returned
         // true upon release.
@@ -162,7 +161,7 @@ if (!QS_auto_shift_modifiers) {
         clear_oneshot_layer_state(ONESHOT_OTHER_KEY_PRESSED);
 #        endif
         return false;
-}
+#    endif
     }
 
     // Store record to be sent to user functions if there's no release record then.
@@ -183,12 +182,7 @@ if (!QS_auto_shift_modifiers) {
 #            endif
         ) &&
 #        endif
-        TIMER_DIFF_16(now, autoshift_time) <
-#        ifdef TAPPING_TERM_PER_KEY
-        get_tapping_term(autoshift_lastkey, record)
-#        else
-        TAPPING_TERM
-#        endif
+        TIMER_DIFF_16(now, autoshift_time) < GET_TAPPING_TERM(autoshift_lastkey, record)
     ) {
         // clang-format on
         // Allow a tap-then-hold for keyrepeat.
@@ -274,7 +268,9 @@ static void autoshift_end(uint16_t keycode, uint16_t now, bool matrix_trigger, k
         }
 #    endif
         // clang-format on
-        qs_wait_ms(QS_tap_code_delay);
+#    if TAP_CODE_DELAY > 0
+        wait_ms(TAP_CODE_DELAY);
+#    endif
 
         autoshift_release_user(autoshift_lastkey, autoshift_flags.lastshifted, record);
         autoshift_flush_shift();
@@ -299,8 +295,6 @@ static void autoshift_end(uint16_t keycode, uint16_t now, bool matrix_trigger, k
  *  to be released.
  */
 void autoshift_matrix_scan(void) {
-    if (!QS_auto_shift_enable) return;
-
     if (autoshift_flags.in_progress) {
         const uint16_t now = timer_read();
         if (TIMER_DIFF_16(now, autoshift_time) >=
@@ -355,7 +349,6 @@ void set_autoshift_timeout(uint16_t timeout) {
 }
 
 bool process_auto_shift(uint16_t keycode, keyrecord_t *record) {
-    if (!QS_auto_shift_enable) return true;
     // Note that record->event.time isn't reliable, see:
     // https://github.com/qmk/qmk_firmware/pull/9826#issuecomment-733559550
     // clang-format off

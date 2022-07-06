@@ -12,6 +12,7 @@ typedef struct {
     uint16_t zValue;
     uint8_t  buttonFlags;
     bool     touchDown;
+    bool     hovering;
 } pinnacle_data_t;
 
 void            cirque_pinnacle_init(void);
@@ -23,6 +24,30 @@ void            cirque_pinnacle_set_scale(uint16_t scale);
 #ifndef CIRQUE_PINNACLE_TIMEOUT
 #    define CIRQUE_PINNACLE_TIMEOUT 20
 #endif
+
+// ADC-attenuation settings (held in BIT_7 and BIT_6)
+// 1X = most sensitive, 4X = least sensitive
+#define ADC_ATTENUATE_1X     0x00
+#define ADC_ATTENUATE_2X     0x40
+#define ADC_ATTENUATE_3X     0x80
+#define ADC_ATTENUATE_4X     0xC0
+
+#ifndef CIRQUE_PINNACLE_ATTENUATION
+#    define CIRQUE_PINNACLE_ATTENUATION ADC_ATTENUATE_4X
+#endif
+
+#ifndef ZVALUE_MATRIX
+#    define ZVALUE_MATRIX {{0, 0,  0,  0,  0,  0, 0, 0}, {0, 2,  3,  5,  5,  3, 2, 0}, {0, 3,  5, 15, 15,  5, 2, 0}, {0, 3,  5, 15, 15,  5, 3, 0}, {0, 2,  3,  5,  5,  3, 2, 0}, {0, 0,  0,  0,  0,  0, 0, 0}}
+#endif
+
+#ifndef ZONESCALE
+#    define ZONESCALE 256 // divisor for reducing x,y values to an array index for the LUT
+#endif
+
+#define PINNACLE_XMAX     2047    // max value Pinnacle can report for X
+#define PINNACLE_YMAX     1535    // max value Pinnacle can report for Y
+#define ROWS_Y ((PINNACLE_YMAX + 1) / ZONESCALE)
+#define COLS_X ((PINNACLE_XMAX + 1) / ZONESCALE)
 
 // Coordinate scaling values
 #ifndef CIRQUE_PINNACLE_X_LOWER
