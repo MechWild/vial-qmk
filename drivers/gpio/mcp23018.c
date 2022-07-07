@@ -7,7 +7,7 @@
 #include "debug.h"
 
 #define SLAVE_TO_ADDR(n) (n << 1)
-#define TIMEOUT 100
+#define TIMEOUT 5
 
 enum {
     CMD_IODIRA = 0x00, // i/o direction register

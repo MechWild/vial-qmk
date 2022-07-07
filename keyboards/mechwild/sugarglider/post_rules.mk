@@ -13,3 +13,9 @@ endif
 ifeq ($(strip $(OLED_DISPLAY_128X64)), yes)
     OPT_DEFS += -DOLED_DISPLAY_128X64
 endif
+
+ifeq ($(strip $(FAST_ENCODER_ENABLE)), yes)
+    ifdef ENCODER_ENABLE
+        OPT_DEFS += -DFAST_ENCODER_ENABLE
+    endif
+endif

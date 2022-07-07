@@ -5,7 +5,9 @@
 #include "mcp23018.h"
 #include "wait.h"
 #include "debug.h"
-
+#ifdef ENCODER_ENABLE
+#    include "encoder.h"
+#endif
 #define I2C_ADDR 0x20
 #define ROW_POS { 0b01000000, 0b10000000, 0b01000000, 0b10000000, 0b00000100, 0b00010000, 0b00100000, 0b00000010, 0b00001000 }
 
@@ -86,6 +88,10 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
     bool changed = false;
     for (uint8_t current_row = 0; current_row < MATRIX_ROWS; current_row++) {
         changed |= read_cols_on_row(current_matrix, current_row);
+#ifdef FAST_ENCODER_ENABLE
+        encoder_read();
+#endif
+
     }
     return changed;
 }

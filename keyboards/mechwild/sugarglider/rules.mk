@@ -29,6 +29,8 @@ DYNAMIC_TAPPING_TERM_ENABLE = yes               # Enable Dynamic Tapping Term to
 DYNAMIC_TOUCH_TAP_ENABLE = yes
 DEBOUNCE_TYPE = sym_eager_pk
 
+FAST_ENCODER_ENABLE = yes
+
 # custom matrix setup
 CUSTOM_MATRIX = lite
 

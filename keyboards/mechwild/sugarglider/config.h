@@ -79,8 +79,11 @@
 #define ENCODERS_PAD_B { B0, B3, B9 }
 
 /* encoder resolution */
+#define ENCODER_MAP_KEY_DELAY 0
 #define ENCODER_RESOLUTION 4
 #define TAP_CODE_DELAY 0
+
+#define QMK_KEYS_PER_SCAN 12
 
 /* COL2ROW, ROW2COL */
 #define DIODE_DIRECTION COL2ROW
