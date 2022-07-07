@@ -19,13 +19,14 @@ AUDIO_ENABLE = no                   # Audio output
 ENCODER_ENABLE = yes                # Encoder Enabled
 OLED_ENABLE = yes                   # OLED Enabled
 OLED_DRIVER = SSD1306               # OLED Driver
+OLED_DISPLAY_128X64 = yes
 DIP_SWITCH_ENABLE = yes             # Dip Switch Enabled
 
 POINTING_DEVICE_ENABLE = yes                    # Pointing Device Enabled
 POINTING_DEVICE_DRIVER = cirque_pinnacle_spi    # Pointing Device Driver
 
 DYNAMIC_TAPPING_TERM_ENABLE = yes               # Enable Dynamic Tapping Term to control the Tap term for the Cirque Pad easily
-
+DYNAMIC_TOUCH_TAP_ENABLE = yes
 DEBOUNCE_TYPE = sym_eager_pk
 
 # custom matrix setup

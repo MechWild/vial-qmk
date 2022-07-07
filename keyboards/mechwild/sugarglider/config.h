@@ -16,15 +16,6 @@
 #define MATRIX_ROWS 9
 #define MATRIX_COLS 6
 
-#    define ZVALUE_MATRIX {        \
-    {0, 0,  0,  0,  0,  0,  0, 0}, \
-    {0, 5,  8,  10, 10, 8,  5, 0}, \
-    {0, 8,  10, 20, 20, 10, 8, 0}, \
-    {0, 8,  10, 20, 20, 10, 8, 0}, \
-    {0, 5,  8,  10, 10, 8,  5, 0}, \
-    {0, 0,  0,  0,  0,  0,  0, 0}  \
-    }
-
 /* Status light pins */
 //#define LED_NUM_LOCK_PIN B12
 //#define LED_CAPS_LOCK_PIN B13
@@ -44,18 +35,29 @@
 
 /* Define custom font */
 #define OLED_FONT_H "keyboards/mechwild/sugarglider/glcdfont.c"
-#define OLED_DISPLAY_128X64
+//#define OLED_DISPLAY_128X64
 
 /* allows the "key" button on the blackpill to toggle caps lock for user testing before soldering */
 #define DIP_SWITCH_PINS { A0 }
 
+
+#ifdef POINTING_DEVICE_ENABLE
+
+#    define ZVALUE_MATRIX {        \
+    {0, 0,  0,  0,  0,  0,  0, 0}, \
+    {0, 5,  8,  10, 10, 8,  5, 0}, \
+    {0, 8,  10, 20, 20, 10, 8, 0}, \
+    {0, 8,  10, 20, 20, 10, 8, 0}, \
+    {0, 5,  8,  10, 10, 8,  5, 0}, \
+    {0, 0,  0,  0,  0,  0,  0, 0}  \
+    }
 /* set the tapping term for glidepoint pad to register a tap click */
 //#define CIRQUE_PINNACLE_TAPPING_TERM 0 // This is set to 0 to disable it
 
 /* TAPPING_TERM value is used for the CIRQUE_PINNACLE_TAPPING_TERM as well by default
  * defining it this way allows us to easily modify it with DYNAMIC_TAPPING_TERM_ENABLE
  */
-#define TAPPING_TERM 0
+#define TAPPING_TERM 200
 #define CIRQUE_PINNACLE_ATTENUATION ADC_ATTENUATE_2X
 
 /* spi config */
@@ -68,6 +70,9 @@
 #define SPI_MISO_PAL_MODE 5
 #define CIRQUE_PINNACLE_SPI_DIVISOR 8
 #define CIRQUE_PINNACLE_SPI_CS_PIN A3
+
+//#define DYNAMIC_TOUCH_TAP_ENABLE = yes
+#endif
 
 /* encoder pins */
 #define ENCODERS_PAD_A { A2, A15, B8 }

@@ -5,3 +5,11 @@ ifeq ($(strip $(BOOTLOADER)), tinyuf2)
         UF2_BUILD = yes
     endif
 endif
+
+ifeq ($(strip $(DYNAMIC_TOUCH_TAP_ENABLE)), yes)
+    OPT_DEFS += -DDYNAMIC_TOUCH_TAP_ENABLE
+endif
+
+ifeq ($(strip $(OLED_DISPLAY_128X64)), yes)
+    OPT_DEFS += -DOLED_DISPLAY_128X64
+endif

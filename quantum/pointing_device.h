@@ -57,6 +57,16 @@ uint16_t       pointing_device_driver_get_cpi(void);
 void           pointing_device_driver_set_cpi(uint16_t cpi);
 #endif
 
+#ifdef DYNAMIC_TAPPING_TERM_ENABLE
+extern uint16_t g_touch_tapping_term;
+#endif
+
+#if defined(DYNAMIC_TOUCH_TAP_ENABLE)
+#    define GET_TOUCH_TAPPING_TERM(keycode, record) g_touch_tapping_term
+#else
+#    define GET_TOUCH_TAPPING_TERM(keycode, record) (TAPPING_TERM)
+#endif
+
 typedef struct {
     void (*init)(void);
     report_mouse_t (*get_report)(report_mouse_t mouse_report);
