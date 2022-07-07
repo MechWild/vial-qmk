@@ -52,7 +52,7 @@ void board_init(void) {
 }
 
 
-#if (defined(QMK_SETTINGS) && defined(DYNAMIC_TOUCH_TAP_ENABLE))
+#if (defined(QMK_SETTINGS) && !defined(DYNAMIC_TOUCH_TAP_ENABLE))
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {       // here to sync settings from VIAL GUI for tap term to our eeprom config
     if (keyboard_config.dt_term_config != QS.tapping_term && keyboard_config.dt_term_config > 0) {
             keyboard_config.dt_term_config = QS.tapping_term;
