@@ -210,7 +210,7 @@ bool led_update_kb(led_t led_state) {
             oled_write_ln_P(PSTR("FN 3 "), false);
             break;
         default:
-            oled_write_ln_P(PSTR("Undef"), false);
+            oled_write_ln_P(PSTR("Steno"), false);
     }
 	oled_write_ln_P(PSTR(""), false);
     // Host Keyboard LED Status
@@ -275,6 +275,9 @@ bool led_update_kb(led_t led_state) {
                 break;
             case 3:
                 oled_write_P(PSTR("Layer 3"), false);
+                break;
+            case 4:
+                oled_write_P(PSTR("Steno  "), false);
                 break;
             default:
                 oled_write_P(PSTR("Layer ?"), false);    // Should never display, here as a catchall

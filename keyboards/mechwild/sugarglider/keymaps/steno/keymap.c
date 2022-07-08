@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
+#include "keymap_steno.h"
 
 // Defines names for use in layer keycodes and the keymap
 
@@ -13,12 +14,16 @@ void keyboard_post_init_user(void) {
   //debug_mouse=true;
 }
 
+void eeconfig_init_user() {
+    steno_set_mode(STENO_MODE_GEMINI); // or STENO_MODE_BOLT
+}
 
 enum layer_names {
     _QWERTY,
 	_LOWER,
 	_RAISE,
-    _ADJUST
+    _ADJUST,
+    _STENO
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -27,7 +32,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_GESC, KC_Q, KC_W,    KC_E,   KC_R, KC_T,                      KC_NLCK, KC_Y, KC_U, KC_I,    KC_O,    KC_P,    KC_BSPC, 
     KC_TAB,  KC_A, KC_S,    KC_D,   KC_F, KC_G,             KC_MUTE, KC_CLCK, KC_H, KC_J, KC_K,    KC_L,    KC_SCLN, KC_ENT,
     KC_LSFT, KC_Z, KC_X,    KC_C,   KC_V, KC_B,                      KC_SLCK, KC_N, KC_M, KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-    KC_MUTE, KC_LCTL, KC_LALT, LT(_LOWER, KC_SPC), KC_BTN1, KC_BTN3, KC_BTN2, LT(_RAISE, KC_SPC), KC_SPC,  KC_RGUI,  KC_MUTE
+    KC_MUTE, KC_LCTL, KC_LALT, LT(_LOWER, KC_SPC), KC_BTN1, TG(_STENO), KC_BTN2, LT(_RAISE, KC_SPC), KC_SPC,  KC_RGUI,  KC_MUTE
   ),
 
   [_LOWER] = LAYOUT(                                                 
@@ -49,7 +54,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS,     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS, KC_TRNS, RGB_VAD, RGB_RMOD,  RGB_TOG,
     RESET,       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,      KC_TRNS,  KC_TRNS,  KC_TRNS, KC_TRNS, RGB_VAI, RGB_MOD,   KC_TRNS,
                          KC_TRNS,          KC_TRNS, KC_TRNS, KC_TRNS,    KC_TRNS,KC_TRNS,KC_TRNS,    KC_TRNS,  KC_TRNS, KC_TRNS,      KC_TRNS
+  ),
+  [_STENO] = LAYOUT(
+    KC_ESC, STN_N2, STN_N3,    STN_N4,   STN_N5, STN_N6,                      KC_NLCK, STN_N7, STN_N8, STN_N9, STN_NA,    STN_NB,    STN_NC,
+    KC_TRNS, STN_S1, STN_TL,    STN_PL,   STN_HL, STN_ST1,              KC_MUTE, KC_CLCK, STN_ST3, STN_FR, STN_PR, STN_LR, STN_TR, STN_DR, 
+    KC_TRNS, STN_S2, STN_KL,    STN_WL,   STN_RL, STN_ST2,                        KC_SLCK, STN_ST4, STN_RR, STN_BR, STN_GR, STN_SR, STN_ZR,
+    KC_TRNS, KC_TRNS, STN_A, STN_O, KC_TRNS, TG(_STENO), KC_TRNS, STN_E, STN_U,  KC_TRNS, KC_TRNS
   )
+
 };
   
 layer_state_t layer_state_set_user(layer_state_t state) {

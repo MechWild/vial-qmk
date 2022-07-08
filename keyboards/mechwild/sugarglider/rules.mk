@@ -25,8 +25,8 @@ DIP_SWITCH_ENABLE = yes             # Dip Switch Enabled
 POINTING_DEVICE_ENABLE = yes                    # Pointing Device Enabled
 POINTING_DEVICE_DRIVER = cirque_pinnacle_spi    # Pointing Device Driver
 
-DYNAMIC_TAPPING_TERM_ENABLE = yes               # Enable Dynamic Tapping Term to control the Tap term for the Cirque Pad easily
-DYNAMIC_TOUCH_TAP_ENABLE = yes
+DYNAMIC_TAPPING_TERM_ENABLE = yes               
+DYNAMIC_TOUCH_TAP_ENABLE = yes                  # Enable Dynamic Tapping Term to control the Tap term for the Cirque Pad easily
 DEBOUNCE_TYPE = sym_eager_pk
 
 FAST_ENCODER_ENABLE = yes
