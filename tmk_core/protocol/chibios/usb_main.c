@@ -313,6 +313,9 @@ typedef struct {
 #ifdef RAW_ENABLE
             usb_driver_config_t raw_driver;
 #endif
+#ifdef PLOVER_HID_ENABLE
+            usb_driver_config_t plover_hid_driver;
+#endif
 #ifdef MIDI_ENABLE
             usb_driver_config_t midi_driver;
 #endif
@@ -339,11 +342,23 @@ static usb_driver_configs_t drivers = {
     .console_driver = QMK_USB_DRIVER_CONFIG(CONSOLE, 0, true),
 #endif
 #ifdef RAW_ENABLE
-#    define RAW_IN_CAPACITY 4
-#    define RAW_OUT_CAPACITY 4
+#    ifndef RAW_IN_CAPACITY
+#        define RAW_IN_CAPACITY 4
+#    endif
+#    ifndef RAW_OUT_CAPACITY
+#        define RAW_OUT_CAPACITY 4
+#    endif
 #    define RAW_IN_MODE USB_EP_MODE_TYPE_INTR
 #    define RAW_OUT_MODE USB_EP_MODE_TYPE_INTR
     .raw_driver = QMK_USB_DRIVER_CONFIG(RAW, 0, false),
+#endif
+
+#ifdef PLOVER_HID_ENABLE
+#    define PLOVER_HID_IN_CAPACITY 4
+#    define PLOVER_HID_OUT_CAPACITY 4
+#    define PLOVER_HID_IN_MODE USB_EP_MODE_TYPE_INTR
+#    define PLOVER_HID_OUT_MODE USB_EP_MODE_TYPE_INTR
+    .plover_hid_driver = QMK_USB_DRIVER_CONFIG(PLOVER_HID, 0, false),
 #endif
 
 #ifdef MIDI_ENABLE
@@ -1074,7 +1089,7 @@ void console_task(void) {
     uint8_t buffer[CONSOLE_EPSIZE];
     size_t  size = 0;
     do {
-        size_t size = chnReadTimeout(&drivers.console_driver.driver, buffer, sizeof(buffer), TIME_IMMEDIATE);
+        size = chnReadTimeout(&drivers.console_driver.driver, buffer, sizeof(buffer), TIME_IMMEDIATE);
         if (size > 0) {
             console_receive(buffer, size);
         }
@@ -1082,6 +1097,26 @@ void console_task(void) {
 }
 
 #endif /* CONSOLE_ENABLE */
+
+#ifdef PLOVER_HID_ENABLE
+static bool plover_hid_report_updated = false;
+static uint8_t plover_hid_current_report[PLOVER_HID_EPSIZE] = {0x50};
+void plover_hid_update(uint8_t button, bool pressed) {
+    if (pressed) {
+        plover_hid_current_report[1 + button/8] |= (1 << (7 - (button % 8)));
+    } else {
+        plover_hid_current_report[1 + button/8] &= ~(1 << (7 - (button % 8)));
+    }
+    plover_hid_report_updated = true;
+}
+
+void plover_hid_task(void) {
+    if (plover_hid_report_updated) {
+        chnWrite(&drivers.plover_hid_driver.driver, plover_hid_current_report, sizeof(plover_hid_current_report));
+        plover_hid_report_updated = false;
+    }
+}
+#endif
 
 #ifdef RAW_ENABLE
 void raw_hid_send(uint8_t *data, uint8_t length) {
@@ -1102,7 +1137,7 @@ void raw_hid_task(void) {
     uint8_t buffer[RAW_EPSIZE];
     size_t  size = 0;
     do {
-        size_t size = chnReadTimeout(&drivers.raw_driver.driver, buffer, sizeof(buffer), TIME_IMMEDIATE);
+        size = chnReadTimeout(&drivers.raw_driver.driver, buffer, sizeof(buffer), TIME_IMMEDIATE);
         if (size > 0) {
             raw_hid_receive(buffer, size);
         }
@@ -1125,7 +1160,7 @@ void midi_ep_task(void) {
     uint8_t buffer[MIDI_STREAM_EPSIZE];
     size_t  size = 0;
     do {
-        size_t size = chnReadTimeout(&drivers.midi_driver.driver, buffer, sizeof(buffer), TIME_IMMEDIATE);
+        size = chnReadTimeout(&drivers.midi_driver.driver, buffer, sizeof(buffer), TIME_IMMEDIATE);
         if (size > 0) {
             MIDI_EventPacket_t event;
             recv_midi_packet(&event);
