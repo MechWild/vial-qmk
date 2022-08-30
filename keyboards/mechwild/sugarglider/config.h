@@ -17,10 +17,10 @@
 #define MATRIX_COLS 6
 
 /* Status light pins */
-//#define LED_NUM_LOCK_PIN B12
-//#define LED_CAPS_LOCK_PIN B13
-//#define LED_SCROLL_LOCK_PIN B14
-//#define LED_PIN_ON_STATE 0
+#define LED_NUM_LOCK_PIN B12
+#define LED_CAPS_LOCK_PIN B13
+#define LED_SCROLL_LOCK_PIN B14
+#define LED_PIN_ON_STATE 1
 
 #define USB_POLLING_INTERVAL_MS 1
 
@@ -75,8 +75,8 @@
 #endif
 
 /* encoder pins */
-#define ENCODERS_PAD_A { A2, A15, B8 }
-#define ENCODERS_PAD_B { B0, B3, B9 }
+#define ENCODERS_PAD_A { B0, B3, B9, C14 }
+#define ENCODERS_PAD_B { A2, A15, B8, C15 }
 
 /* encoder resolution */
 #define ENCODER_MAP_KEY_DELAY 0
